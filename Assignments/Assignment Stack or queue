@@ -1,1 +1,30 @@
-
+class Solution {
+    public int[] asteroidCollision(int[] asteroids) {
+        int n = asteroids.length;
+        int[] stack = new int[n];
+        int top = -1;
+        for (int a : asteroids) {
+            boolean exploded = false;
+            while (top >= 0 && a < 0 && stack[top] > 0) {
+                if (stack[top] < -a) {
+                    top--;
+                } else if (stack[top] == -a) {
+                    top--;
+                    exploded = true;
+                    break;
+                } else {  
+                exploded = true;
+                    break;
+                }
+            }
+            if (!exploded) {
+                stack[++top] = a;
+            }
+        }
+        int[] result = new int[top + 1];
+        for (int i = 0; i <= top; i++) {
+            result[i] = stack[i];
+        }
+        return result;
+    }
+}
