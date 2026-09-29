@@ -1,0 +1,21 @@
+class Solution {
+    public int reverse(int x) {
+        int sum=0;
+        
+        while(x!=0)
+            {
+                int r;
+                
+                 r=x%10;
+              
+                x=x/10;
+                int   nsum=sum*10+r;
+                if((nsum-r)/10!=sum)
+return 0;
+sum=nsum;
+                
+            }
+    
+            return sum;
+    }
+}
