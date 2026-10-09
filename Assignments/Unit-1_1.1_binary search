@@ -1,0 +1,42 @@
+#include <stdio.h>
+
+int main() {
+    int a[100], n, i, key, low, high, mid, pos, comparisons, choice;
+ 
+    printf("Enter number of employee IDs: ");
+    scanf("%d", &n);
+    printf("Enter %d employee IDs in ascending order:\n", n);
+    for (i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+ 
+    do {
+        printf("\nEnter the employee ID to search: ");
+        scanf("%d", &key);
+ 
+        low = 0;
+        high = n - 1;
+        pos = -1;
+        comparisons = 0;
+ 
+        while (low <= high) {
+            mid = (low + high) / 2;
+            comparisons++;
+            if (a[mid] == key) {
+                pos = mid;
+                break;
+            } else if (key < a[mid])
+                high = mid - 1;
+            else
+                low = mid + 1;
+        }
+ 
+        if (pos != -1)
+            printf("Employee ID %d FOUND at position %d (index %d).\n", key, pos + 1, pos);
+        else
+            printf("Employee ID %d is NOT present in the list.\n", key);
+        printf("Number of comparisons = %d\n", comparisons);
+        printf("Search another ID? (1 = Yes, 0 = No): ");
+        scanf("%d", &choice);
+    } while (choice == 1);
+    return 0;
+}
