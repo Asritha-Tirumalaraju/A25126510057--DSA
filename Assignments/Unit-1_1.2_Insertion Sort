@@ -1,0 +1,38 @@
+#include <stdio.h>
+void printArray(int a[], int n) {
+    int i;
+    for (i = 0; i < n; i++)
+        printf("%d ", a[i]);
+    printf("\n");
+}
+int main() {
+    int a[100], n, i, j, key, shifts = 0, passShifts;
+ 
+    printf("Enter number of marks: ");
+    scanf("%d", &n);
+    printf("Enter %d marks:\n", n);
+    for (i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+    printf("\nOriginal array: ");
+    printArray(a, n);
+    printf("\n");
+    for (i = 1; i < n; i++) {
+        key = a[i];
+        j = i - 1;
+        passShifts = 0;
+        while (j >= 0 && a[j] > key) {
+            a[j + 1] = a[j];
+            j--;
+            passShifts++;
+            shifts++;
+        }
+        a[j + 1] = key;
+        printf("Pass %d: ", i);
+        printArray(a, n);
+        printf("(shifts in this pass = %d)\n", passShifts);
+    }
+    printf("\nFinal sorted list : ");
+    printArray(a, n);
+    printf("Total number of shifts = %d\n", shifts);
+    return 0;
+}
