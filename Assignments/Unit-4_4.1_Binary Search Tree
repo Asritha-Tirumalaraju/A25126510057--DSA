@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+ 
+struct node {
+    int data;
+    struct node *left, *right;
+};
+ 
+struct node *newNode(int x) {
+    struct node *p = (struct node *)malloc(sizeof(struct node));
+    p->data = x;
+    p->left = p->right = NULL;
+    return p;
+}
+ 
+struct node *insert(struct node *root, int x) {
+    if (root == NULL)
+        return newNode(x);
+    if (x < root->data)
+        root->left = insert(root->left, x);
+    else if (x > root->data)
+        root->right = insert(root->right, x);
+    else
+        printf("ID %d already exists - duplicate ignored.\n", x);
+    return root;
+}
+ 
+void inorder(struct node *r) {
+    if (r != NULL) {
+        inorder(r->left);
+        printf("%d ", r->data);
+        inorder(r->right);
+    }
+}
+ 
+void preorder(struct node *r) {
+    if (r != NULL) {
+        printf("%d ", r->data);
+        preorder(r->left);
+        preorder(r->right);
+    }
+}
+ 
+void postorder(struct node *r) {
+    if (r != NULL) {
+        postorder(r->left);
+        postorder(r->right);
+        printf("%d ", r->data);
+    }
+}
+ 
+int search(struct node *r, int key) {
+    while (r != NULL) {
+        if (key == r->data)
+            return 1;
+        r = (key < r->data) ? r->left : r->right;
+    }
+    return 0;
+}
+ 
+int main() {
+    struct node *root = NULL;
+    int n, i, x, key, choice;
+ 
+    printf("Enter number of values to insert: ");
+    scanf("%d", &n);
+    printf("Enter %d integer IDs:\n", n);
+    for (i = 0; i < n; i++) {
+        scanf("%d", &x);
+        root = insert(root, x);
+    }
+ 
+    printf("\nInorder   : "); inorder(root);
+    printf("\nPreorder  : "); preorder(root);
+    printf("\nPostorder : "); postorder(root);
+    printf("\n");
+ 
+    do {
+        printf("\nEnter value to search: ");
+        scanf("%d", &key);
+        if (search(root, key))
+            printf("%d EXISTS in the BST.\n", key);
+        else
+            printf("%d does NOT exist in the BST.\n", key);
+        printf("Search again? (1 = Yes, 0 = No): ");
+        scanf("%d", &choice);
+    } while (choice == 1);
+ 
+    printf("\nNote: Inorder visits Left -> Root -> Right. In a BST every value in the\n");
+    printf("left subtree is smaller than the root and every value in the right subtree\n");
+    printf("is larger, so the inorder output above is in ascending (sorted) order.\n");
+    return 0;
+}
