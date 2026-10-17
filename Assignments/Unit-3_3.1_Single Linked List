@@ -1,0 +1,132 @@
+#include <stdio.h>
+#include <stdlib.h>
+ 
+struct node {
+    int roll;
+    struct node *next;
+};
+struct node *head = NULL;
+ 
+struct node *newNode(int roll) {
+    struct node *p = (struct node *)malloc(sizeof(struct node));
+    p->roll = roll;
+    p->next = NULL;
+    return p;
+}
+ 
+void insertBegin(int roll) {
+    struct node *p = newNode(roll);
+    p->next = head;
+    head = p;
+}
+ 
+void insertEnd(int roll) {
+    struct node *p = newNode(roll), *t;
+    if (head == NULL) {
+        head = p;
+        return;
+    }
+    for (t = head; t->next != NULL; t = t->next)
+        ;
+    t->next = p;
+}
+ 
+void display() {
+    struct node *t = head;
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    printf("List: ");
+    while (t != NULL) {
+        printf("%d -> ", t->roll);
+        t = t->next;
+    }
+    printf("NULL\n");
+}
+ 
+void search(int roll) {
+    struct node *t = head;
+    int pos = 1;
+    while (t != NULL) {
+        if (t->roll == roll) {
+            printf("Roll number %d found at position %d.\n", roll, pos);
+            return;
+        }
+        t = t->next;
+        pos++;
+    }
+    printf("Roll number %d is not available in the list.\n", roll);
+}
+ 
+void deleteNode(int roll) {
+    struct node *t = head, *prev = NULL;
+    while (t != NULL && t->roll != roll) {
+        prev = t;
+        t = t->next;
+    }
+    if (t == NULL) {
+        printf("Roll number %d is not available. Nothing deleted.\n", roll);
+        return;
+    }
+    if (prev == NULL)
+        head = t->next;
+    else
+        prev->next = t->next;
+    free(t);
+    printf("Roll number %d deleted.\n", roll);
+}
+ 
+int main() {
+    int choice, n, i, x;
+    do {
+        printf("\n1.Create  2.Insert at beginning  3.Insert at end\n");
+        printf("4.Search  5.Delete  6.Display  7.Exit\nEnter choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                printf("How many roll numbers? ");
+                scanf("%d", &n);
+                printf("Enter %d roll numbers:\n", n);
+                for (i = 0; i < n; i++) {
+                    scanf("%d", &x);
+                    insertEnd(x);
+                }
+                display();
+                break;
+            case 2:
+                printf("Enter roll number: ");
+                scanf("%d", &x);
+                insertBegin(x);
+                display();
+                break;
+            case 3:
+                printf("Enter roll number: ");
+                scanf("%d", &x);
+                insertEnd(x);
+                display();
+                break;
+            case 4:
+                printf("Enter roll number to search: ");
+                scanf("%d", &x);
+                search(x);
+                display();
+                break;
+            case 5:
+                printf("Enter roll number to delete: ");
+                scanf("%d", &x);
+                deleteNode(x);
+                display();
+                break;
+            case 6:
+                display();
+                break;
+            case 7:
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice!\n");
+        }
+    } while (choice != 7);
+    return 0;
+}
