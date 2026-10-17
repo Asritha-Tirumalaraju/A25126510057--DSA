@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#define MAX 100
+ 
+char stack[MAX];
+int top = -1;
+ 
+void push(char c) {
+    if (top == MAX - 1) {
+        printf("Stack overflow\n");
+        return;
+    }
+    stack[++top] = c;
+}
+ 
+char pop() {
+    if (top == -1)
+        return '\0';
+    return stack[top--];
+}
+ 
+char peek() {
+    return stack[top];
+}
+ 
+int precedence(char c) {
+    switch (c) {
+        case '^': return 3;
+        case '*':
+        case '/': return 2;
+        case '+':
+        case '-': return 1;
+    }
+    return 0;
+}
+ 
+int main() {
+    char infix[MAX], postfix[MAX], ch, t;
+    int i, k, error, choice;
+ 
+    do {
+        top = -1;
+        k = 0;
+        error = 0;
+ 
+        printf("\nEnter a valid infix expression (no spaces): ");
+        scanf("%s", infix);
+ 
+        for (i = 0; infix[i] != '\0' && !error; i++) {
+            ch = infix[i];
+            if (isalnum(ch)) {
+                postfix[k++] = ch;
+            } else if (ch == '(') {
+                push(ch);
+            } else if (ch == ')') {
+                while (top != -1 && peek() != '(')
+                    postfix[k++] = pop();
+                if (top == -1)
+                    error = 1;           /* no matching '(' */
+                else
+                    pop();               /* discard '(' */
+            } else if (strchr("+-*/^", ch)) {
+                while (top != -1 && peek() != '(' &&
+                       (precedence(peek()) > precedence(ch) ||
+                        (precedence(peek()) == precedence(ch) && ch != '^')))
+                    postfix[k++] = pop();
+                push(ch);
+            } else {
+                error = 1;               /* invalid character */
+            }
+        }
+ 
+        while (top != -1 && !error) {
+            t = pop();
+            if (t == '(')
+                error = 1;               /* no matching ')' */
+            else
+                postfix[k++] = t;
+        }
+        postfix[k] = '\0';
+ 
+        if (error)
+            printf("Invalid expression (unbalanced parentheses or bad symbol).\n");
+        else {
+            printf("Infix   : %s\n", infix);
+            printf("Postfix : %s\n", postfix);
+        }
+ 
+        printf("Convert another expression? (1 = Yes, 0 = No): ");
+        scanf("%d", &choice);
+    } while (choice == 1);
+ 
+    return 0;
+}
