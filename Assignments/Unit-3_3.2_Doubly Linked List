@@ -1,0 +1,129 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+ 
+struct page {
+    char url[50];
+    struct page *prev, *next;
+};
+struct page *head = NULL, *tail = NULL, *cur = NULL;
+ 
+void visit(char url[]) {
+    struct page *p = (struct page *)malloc(sizeof(struct page));
+    strcpy(p->url, url);
+    p->next = NULL;
+    p->prev = tail;
+    if (tail == NULL)
+        head = p;
+    else
+        tail->next = p;
+    tail = p;
+    cur = p;
+    printf("Visited new page: %s\n", url);
+}
+ 
+void forward() {
+    if (cur == NULL)
+        printf("History is empty.\n");
+    else if (cur->next == NULL)
+        printf("End of history: already at the last page (%s).\n", cur->url);
+    else {
+        cur = cur->next;
+        printf("Moved forward to: %s\n", cur->url);
+    }
+}
+ 
+void backward() {
+    if (cur == NULL)
+        printf("History is empty.\n");
+    else if (cur->prev == NULL)
+        printf("Beginning of history: already at the first page (%s).\n", cur->url);
+    else {
+        cur = cur->prev;
+        printf("Moved backward to: %s\n", cur->url);
+    }
+}
+ 
+void deletePage(char url[]) {
+    struct page *p = head;
+    while (p != NULL && strcmp(p->url, url) != 0)
+        p = p->next;
+    if (p == NULL) {
+        printf("Page '%s' not found. Nothing deleted.\n", url);
+        return;
+    }
+    if (p->prev != NULL)
+        p->prev->next = p->next;
+    else
+        head = p->next;                 /* deleting first page */
+    if (p->next != NULL)
+        p->next->prev = p->prev;
+    else
+        tail = p->prev;                 /* deleting last page */
+    if (cur == p)
+        cur = (p->next != NULL) ? p->next : p->prev;
+    free(p);
+    printf("Page '%s' deleted.\n", url);
+}
+ 
+void displayForward() {
+    struct page *t = head;
+    if (head == NULL) {
+        printf("History is empty.\n");
+        return;
+    }
+    printf("First to Last: ");
+    while (t != NULL) {
+        printf("%s%s", t->url, (t == cur) ? "*" : "");
+        if (t->next != NULL)
+            printf(" <-> ");
+        t = t->next;
+    }
+    printf("\n");
+}
+ 
+void displayBackward() {
+    struct page *t = tail;
+    if (tail == NULL) {
+        printf("History is empty.\n");
+        return;
+    }
+    printf("Last to First: ");
+    while (t != NULL) {
+        printf("%s%s", t->url, (t == cur) ? "*" : "");
+        if (t->prev != NULL)
+            printf(" <-> ");
+        t = t->prev;
+    }
+    printf("\n");
+}
+ 
+int main() {
+    int choice;
+    char url[50];
+    printf("(* marks the current page)\n");
+    do {
+        printf("\n1.Visit new page  2.Forward  3.Backward  4.Delete page\n");
+        printf("5.Display first-to-last  6.Display last-to-first  7.Exit\nEnter choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                printf("Enter page name: ");
+                scanf("%s", url);
+                visit(url);
+                break;
+            case 2: forward(); break;
+            case 3: backward(); break;
+            case 4:
+                printf("Enter page name to delete: ");
+                scanf("%s", url);
+                deletePage(url);
+                break;
+            case 5: displayForward(); break;
+            case 6: displayBackward(); break;
+            case 7: printf("Exiting program.\n"); break;
+            default: printf("Invalid choice!\n");
+        }
+    } while (choice != 7);
+    return 0;
+}
