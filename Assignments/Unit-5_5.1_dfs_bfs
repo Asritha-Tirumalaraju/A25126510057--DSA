@@ -1,0 +1,72 @@
+#include <stdio.h>
+#define MAX 20
+int a[MAX][MAX], visited[MAX], n;
+void dfs(int v)
+{
+    int i;
+    visited[v] = 1;
+    printf("%d ", v);
+    for (i = 0; i < n; i++)
+        if (a[v][i] == 1 && !visited[i])
+            dfs(i);
+}
+void bfs(int s)
+{
+    int q[MAX], front = 0, rear = 0, v, i;
+    visited[s] = 1;
+    q[rear++] = s;
+    while (front < rear) {
+        v = q[front++];
+        printf("%d ", v);
+        for (i = 0; i < n; i++)
+            if (a[v][i] == 1 && !visited[i]) {
+                visited[i] = 1;
+                q[rear++] = i;
+            }
+    }
+}
+void reset()
+{
+    for (int i = 0; i < n; i++) visited[i] = 0;
+}
+void report()
+{
+    int i, count = 0;
+    for (i = 0; i < n; i++)
+        if (!visited[i]) count++;
+    if (count == 0)
+        printf("\nAll %d vertices visited: graph is CONNECTED\n", n);
+    else {
+        printf("\nVertices not reached: ");
+        for (i = 0; i < n; i++)
+            if (!visited[i]) printf("%d ", i);
+        printf("\nGraph is PARTIALLY CONNECTED from this start vertex\n");
+    }
+}
+int main()
+{
+    int i, j, start, ch;
+    printf("Enter number of locations n (1 to %d): ", MAX);
+    scanf("%d", &n);
+    if (n < 1 || n > MAX) { printf("Invalid n\n"); return 0; }
+
+    printf("Enter adjacency matrix (%d x %d):\n", n, n);
+    for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            scanf("%d", &a[i][j]);
+
+    printf("Enter starting vertex (0 to %d): ", n - 1);
+    scanf("%d", &start);
+    if (start < 0 || start >= n) { printf("Invalid starting vertex\n"); return 0; }
+
+    printf("1.BFS 2.DFS\nEnter your choice: ");
+    scanf("%d", &ch);
+
+    reset();
+    if (ch == 1) { printf("BFS visit order: "); bfs(start); }
+    else if (ch == 2) { printf("DFS visit order: "); dfs(start); }
+    else { printf("Invalid choice\n"); return 0; }
+    report();
+    return 0;
+}
+
