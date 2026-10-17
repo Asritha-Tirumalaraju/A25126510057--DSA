@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+ 
+int quiet = 0;   /* suppresses messages during the internal successor removal */
+ 
+struct node {
+    int data;
+    struct node *left, *right;
+};
+ 
+struct node *newNode(int x) {
+    struct node *p = (struct node *)malloc(sizeof(struct node));
+    p->data = x;
+    p->left = p->right = NULL;
+    return p;
+}
+ 
+struct node *insert(struct node *root, int x) {
+    if (root == NULL)
+        return newNode(x);
+    if (x < root->data)
+        root->left = insert(root->left, x);
+    else if (x > root->data)
+        root->right = insert(root->right, x);
+    return root;
+}
+ 
+void inorder(struct node *r) {
+    if (r != NULL) {
+        inorder(r->left);
+        printf("%d ", r->data);
+        inorder(r->right);
+    }
+}
+ 
+struct node *minNode(struct node *r) {
+    while (r->left != NULL)
+        r = r->left;
+    return r;
+}
+ 
+struct node *deleteNode(struct node *root, int key) {
+    struct node *temp;
+    if (root == NULL) {
+        printf("Value %d not found in the BST.\n", key);
+        return NULL;
+    }
+    if (key < root->data)
+        root->left = deleteNode(root->left, key);
+    else if (key > root->data)
+        root->right = deleteNode(root->right, key);
+    else {
+        if (root->left == NULL && root->right == NULL) {
+            if (!quiet)
+                printf("Case 1: node %d is a LEAF (zero children).\n", key);
+            free(root);
+            return NULL;
+        } else if (root->left == NULL || root->right == NULL) {
+            if (!quiet)
+                printf("Case 2: node %d has ONE child.\n", key);
+            temp = (root->left != NULL) ? root->left : root->right;
+            free(root);
+            return temp;
+        } else {
+            printf("Case 3: node %d has TWO children (replaced by inorder successor %d).\n",
+                   key, minNode(root->right)->data);
+            temp = minNode(root->right);
+            root->data = temp->data;
+            quiet = 1;
+            root->right = deleteNode(root->right, temp->data);
+            quiet = 0;
+        }
+    }
+    return root;
+}
+ 
+int main() {
+    struct node *root = NULL;
+    int n, i, x, key, choice;
+ 
+    printf("Enter number of nodes: ");
+    scanf("%d", &n);
+    printf("Enter %d values:\n", n);
+    for (i = 0; i < n; i++) {
+        scanf("%d", &x);
+        root = insert(root, x);
+    }
+ 
+    do {
+        printf("\nInorder before deletion: ");
+        inorder(root);
+        printf("\nEnter node to delete: ");
+        scanf("%d", &key);
+        root = deleteNode(root, key);
+        printf("Inorder after deletion : ");
+        inorder(root);
+        printf("\nDelete another node? (1 = Yes, 0 = No): ");
+        scanf("%d", &choice);
+    } while (choice == 1 && root != NULL);
+ 
+    return 0;
+}
